@@ -10,7 +10,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Format
         run: cargo fmt && git diff --exit-code
@@ -25,8 +25,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      submodules: true
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
 
     - name: Update rust
       run: rustup update
