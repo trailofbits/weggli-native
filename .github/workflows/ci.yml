@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      submodules: true
 
     - name: Update rust
       run: rustup update
