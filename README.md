@@ -1,6 +1,8 @@
 weggli-native
 =============
 
+![CI](https://github.com/trailofbits/weggli-native/actions/workflows/ci.yml/badge.svg)
+
 weggli-native is a "native" C API for Google's
 [weggli](https://github.com/googleprojectzero/weggli).
 
