@@ -1,0 +1,12 @@
+[package]
+name = "weggli-native"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "weggli_native"
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+libc = "0.2"
+weggli = { path = "submodules/weggli" }

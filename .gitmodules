@@ -1,0 +1,3 @@
+[submodule "submodules/weggli"]
+	path = submodules/weggli
+	url = git@github.com:woodruffw-forks/weggli.git
