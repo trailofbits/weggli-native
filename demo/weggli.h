@@ -31,6 +31,10 @@ typedef bool (*CapturesCallback)(size_t, size_t, void*);
 
 typedef bool (*VariablesCallback)(const char*, size_t, size_t, void*);
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /**
  * Create a new Weggli query.
  *
@@ -144,3 +148,7 @@ void weggli_iter_match_captures(const struct QueryResult *result,
 bool weggli_iter_match_variables(const struct QueryResult *result,
                                  VariablesCallback callback,
                                  void *user);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
