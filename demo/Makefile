@@ -8,6 +8,6 @@ libweggli:
 	cd .. && cargo build --release
 
 .PHONY:
-weggli.h:
+weggli.h: libweggli
 	@# Annoying: cbindgen has to run in the crate root
 	cd .. && cbindgen --config cbindgen.toml --crate weggli-native --output demo/$@

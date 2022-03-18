@@ -1,4 +1,4 @@
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 
 use libc::{c_char, c_void, size_t};
 use weggli::query::QueryTree as QueryTreeImpl;
@@ -99,6 +99,8 @@ type ResultCallback = unsafe extern "C" fn(*const QueryResult, *mut c_void) -> b
 /// Where `QueryResult` is an opaque pointer and `userdata` is optional,
 /// user-supplied callback state.
 ///
+/// Callbacks can `true` to continue iteration, and `false` to exit.
+///
 /// # Safety
 ///
 /// * `matches` must have been created by `weggli_matches`, and must not have
@@ -133,6 +135,8 @@ type CapturesCallback = unsafe extern "C" fn(size_t, size_t, *mut c_void) -> boo
 /// Where the two `size_t` parameters represent the start and end range of
 /// the capture, and `userdata` is optional, user-supplied callback state.
 ///
+/// Callbacks can `true` to continue iteration, and `false` to exit.
+///
 /// # Safety
 ///
 /// * `matches` must have been created by `weggli_matches`, and must not have
@@ -150,4 +154,63 @@ pub unsafe extern "C" fn weggli_iter_match_captures(
             break;
         }
     }
+}
+
+type VariablesCallback = unsafe extern "C" fn(*const c_char, size_t, size_t, *mut c_void) -> bool;
+
+/// Yield each variable capture in `result` to a callback. Callbacks have the following
+/// signature:
+///
+/// ```c
+/// bool handle_variable(const char *name, size_t start, size_t end, void *userdata);
+/// ```
+///
+/// Where `name` is the name of the variable, the two `size_t` parameters
+/// represent the start and end range of the capture, and `userdata` is
+/// optional, user-supplied callback state.
+///
+/// Callbacks can `true` to continue iteration, and `false` to exit.
+///
+/// Returns `false` if an error occurs during variable-to-capture mapping
+/// (e.g., if a variable has an unrepresentable name or references a
+/// nonexistent capture).
+///
+/// # Safety
+///
+/// * `matches` must have been created by `weggli_matches`, and must not have
+///   been previously freed by a call to `weggli_destroy_matches`.
+#[no_mangle]
+pub unsafe extern "C" fn weggli_iter_match_variables(
+    result: *const QueryResult,
+    callback: VariablesCallback,
+    user: *mut c_void,
+) -> bool {
+    let result = &*result;
+
+    for (var, idx) in result.0.vars.iter() {
+        // This is unlikely to fail, but conceivably could if a variable
+        // somehow ends up with a NULL byte in it.
+        let var = match CString::new(var.clone()) {
+            Ok(var) => var,
+            Err(_) => return false,
+        };
+
+        // This shouldn't ever fail, assuming that `result` is
+        // internally consistent.
+        let capture = match result.0.captures.get(*idx) {
+            Some(capture) => capture,
+            None => return false,
+        };
+
+        if !callback(
+            var.as_c_str().as_ptr(),
+            capture.range.start,
+            capture.range.end,
+            user,
+        ) {
+            break;
+        }
+    }
+
+    true
 }

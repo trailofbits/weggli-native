@@ -12,10 +12,22 @@ bool iter_captures(size_t start, size_t end, void *userdata) {
   return true;
 }
 
+bool iter_variables(const char *name, size_t start, size_t end, void *userdata) {
+  printf("variable %s: span: (%zu, %zu])\n", name, start, end);
+
+  return true;
+}
+
 bool iter_matches(const QueryResult *result, void *userdata) {
   printf("%s\n", "match!");
 
+  printf("======== raw captures ========\n");
   weggli_iter_match_captures(result, iter_captures, NULL);
+  printf("====== end raw captures ======\n");
+
+  printf("======== var captures ========\n");
+  weggli_iter_match_variables(result, iter_variables, NULL);
+  printf("====== end var captures ======\n");
 
   return true;
 }

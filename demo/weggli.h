@@ -29,6 +29,8 @@ typedef bool (*ResultCallback)(const struct QueryResult*, void*);
 
 typedef bool (*CapturesCallback)(size_t, size_t, void*);
 
+typedef bool (*VariablesCallback)(const char*, size_t, size_t, void*);
+
 /**
  * Create a new Weggli query.
  *
@@ -82,6 +84,8 @@ void weggli_destroy_matches(struct QueryResults *res);
  * Where `QueryResult` is an opaque pointer and `userdata` is optional,
  * user-supplied callback state.
  *
+ * Callbacks can `true` to continue iteration, and `false` to exit.
+ *
  * # Safety
  *
  * * `matches` must have been created by `weggli_matches`, and must not have
@@ -103,6 +107,8 @@ void weggli_iter_matches(const struct QueryResults *matches, ResultCallback call
  * Where the two `size_t` parameters represent the start and end range of
  * the capture, and `userdata` is optional, user-supplied callback state.
  *
+ * Callbacks can `true` to continue iteration, and `false` to exit.
+ *
  * # Safety
  *
  * * `matches` must have been created by `weggli_matches`, and must not have
@@ -111,3 +117,30 @@ void weggli_iter_matches(const struct QueryResults *matches, ResultCallback call
 void weggli_iter_match_captures(const struct QueryResult *result,
                                 CapturesCallback callback,
                                 void *user);
+
+/**
+ * Yield each variable capture in `result` to a callback. Callbacks have the following
+ * signature:
+ *
+ * ```c
+ * bool handle_variable(const char *name, size_t start, size_t end, void *userdata);
+ * ```
+ *
+ * Where `name` is the name of the variable, the two `size_t` parameters
+ * represent the start and end range of the capture, and `userdata` is
+ * optional, user-supplied callback state.
+ *
+ * Callbacks can `true` to continue iteration, and `false` to exit.
+ *
+ * Returns `false` if an error occurs during variable-to-capture mapping
+ * (e.g., if a variable has an unrepresentable name or references a
+ * nonexistent capture).
+ *
+ * # Safety
+ *
+ * * `matches` must have been created by `weggli_matches`, and must not have
+ *   been previously freed by a call to `weggli_destroy_matches`.
+ */
+bool weggli_iter_match_variables(const struct QueryResult *result,
+                                 VariablesCallback callback,
+                                 void *user);
