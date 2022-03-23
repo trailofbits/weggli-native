@@ -13,7 +13,7 @@ See the [demo](demo/) for a small example of use.
 ## Building
 
 ```console
-$ git clone --recurse-submodules https://github.com/trailofbits/weggli-native
+$ git clone https://github.com/trailofbits/weggli-native
 $ cd weggli-native
 $ # add --release for a release build
 $ cargo build
