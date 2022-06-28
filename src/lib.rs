@@ -139,8 +139,7 @@ type CapturesCallback = unsafe extern "C" fn(size_t, size_t, *mut c_void) -> boo
 ///
 /// # Safety
 ///
-/// * `matches` must have been created by `weggli_matches`, and must not have
-///   been previously freed by a call to `weggli_destroy_matches`.
+/// * `result` must have been created by `weggli_iter_matches`.
 #[no_mangle]
 pub unsafe extern "C" fn weggli_iter_match_captures(
     result: *const QueryResult,
@@ -177,8 +176,9 @@ type VariablesCallback = unsafe extern "C" fn(*const c_char, size_t, size_t, *mu
 ///
 /// # Safety
 ///
-/// * `matches` must have been created by `weggli_matches`, and must not have
-///   been previously freed by a call to `weggli_destroy_matches`.
+/// * `result` must have been created by `weggli_iter_matches`.
+///
+/// * Callbacks must not hold onto `name` for longer than their own lifetime.
 #[no_mangle]
 pub unsafe extern "C" fn weggli_iter_match_variables(
     result: *const QueryResult,
