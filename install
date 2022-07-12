@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+function Help
+{
+  echo "Usage: ./install [OPTIONS]"
+  echo ""
+  echo "Options:"
+  echo "  --prefix <DIR>"
+  echo "     Install weggli_native to this directory (default: /usr/local)"
+  echo "  --without-header"
+  echo "     Dont generate weggli.h"
+  echo "  --with-cbindgen <PATH>"
+  echo "     Use the specified cbindgen to generate the header (default: cbindgen)"
+  echo "  --with-cargo <PATH>"
+  echo "     Use the specified cargo to build weggli_native (default: cargo)"
+}
+
+function main
+{
+  PREFIX_PATH="/usr/local"
+  GEN_HEADER=true
+  CBINDGEN_BIN="cbindgen"
+  CARGO_BIN="cargo"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+    -h | --help)
+      Help
+      exit 0
+      ;;
+    --prefix)
+      PREFIX_PATH="${2}"
+      echo "[+] weggli_native will be installed in ${PREFIX_PATH}"
+      shift
+      ;;
+    --without-header)
+      GEN_HEADER=false
+      echo "[+] no headers will be generated for weggli_native"
+      ;;
+    --with-cbindgen)
+      CBINDGEN_BIN="${2}"
+      echo "[+] ${CBINDGEN_BIN} will be used to generate the header"
+      shift
+      ;;
+    --with-cargo)
+      CARGO_BIN="${2}"
+      echo "[+] ${CARGO_BIN} will be used to build weggli_native"
+      shift
+      ;;
+    *)
+      echo "[!] Unknown argument: ${key}"
+      exit 1
+      ;;
+    esac
+    shift
+  done
+
+  if ! "${CARGO_BIN}" --version; then
+    echo "[!] ${CARGO_BIN} is not working"
+    exit 1
+  fi
+
+  if ! "${CBINDGEN_BIN}" --version; then
+    echo "[!] ${CBINDGEN_BIN} is not working"
+    exit 1
+  fi
+
+  cargo build --release || exit 1
+  install target/release/libweggli_native.a "${PREFIX_PATH}/lib" || exit 1
+
+  if [ -f target/release/libweggli_native.so ]; then
+    install target/release/libweggli_native.so "${PREFIX_PATH}/bin" || exit 1
+
+    cat << EOF > "${PREFIX_PATH}/weggli_native-config.cmake"
+add_library(weggli::weggli_native-shared UNKNOWN IMPORTED)
+set_target_properties(weggli::weggli_native-shared
+    PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${PREFIX_PATH}/include"
+        IMPORTED_LOCATION "${PREFIX_PATH}/bin/libweggli_native.so")
+
+EOF
+  fi
+
+  if [ -f target/release/libweggli_native.dylib ]; then
+    install target/release/libweggli_native.dylib "${PREFIX_PATH}/bin" || exit 1
+
+    cat << EOF > "${PREFIX_PATH}/weggli_native-config.cmake"
+add_library(weggli::weggli_native-shared UNKNOWN IMPORTED)
+set_target_properties(weggli::weggli_native-shared
+    PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${PREFIX_PATH}/include"
+        IMPORTED_LOCATION "${PREFIX_PATH}/bin/libweggli_native.dylib")
+
+EOF
+  fi
+
+  if $GEN_HEADER; then
+    mkdir -p "${PREFIX_PATH}/include" || exit 1
+    "${CBINDGEN_BIN}" -o "${PREFIX_PATH}/include/weggli.h" || exit 1
+  fi
+
+  cat << EOF >> "${PREFIX_PATH}/weggli_native-config.cmake"
+add_library(weggli::weggli_native-static UNKNOWN IMPORTED)
+set_target_properties(weggli::weggli_native-static
+    PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${PREFIX_PATH}/include"
+        IMPORTED_LOCATION "${PREFIX_PATH}/lib/libweggli_native.a")
+EOF
+
+  echo "[+] Done"
+}
+
+main "$@"
+exit $?
