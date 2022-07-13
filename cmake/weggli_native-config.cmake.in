@@ -1,0 +1,19 @@
+@PACKAGE_INIT@
+
+if(NOT TARGET weggli_native::static)
+    add_library(weggli_native::static STATIC IMPORTED)
+    set_target_properties(weggli_native::static
+        PROPERTIES
+        IMPORTED_LOCATION "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/libweggli_native@CMAKE_STATIC_LIBRARY_SUFFIX@"
+        PUBLIC_HEADER "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/weggli.h")
+    target_include_directories(weggli_native::static INTERFACE "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@")
+endif()
+
+if(NOT TARGET weggli_native::shared)
+    add_library(weggli_native::shared SHARED IMPORTED)
+    set_target_properties(weggli_native::shared
+        PROPERTIES
+        IMPORTED_LOCATION "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_BINDIR@/libweggli_native@CMAKE_SHARED_LIBRARY_SUFFIX@"
+        PUBLIC_HEADER "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/weggli.h")
+    target_include_directories(weggli_native::shared INTERFACE "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@")
+endif()
