@@ -42,7 +42,7 @@ include(CMakePackageConfigHelpers)
 
 set(cmake_install_dir ".")
 
-configure_package_config_file("${PROJECT_NAME}-config.cmake.in"
+configure_package_config_file("${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
     INSTALL_DESTINATION "${cmake_install_dir}")
 
