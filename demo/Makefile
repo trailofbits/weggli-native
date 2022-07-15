@@ -1,7 +1,12 @@
 LDFLAGS := -L../target/release -lweggli_native
 
+UNAME := $(shell uname)
+ifeq ($(UNAME),Linux)
+	LDFLAGS := $(LDFLAGS) -Wl,-R../target/release
+endif
+
 demo: demo.c weggli.h libweggli
-	$(CC) $(LDFLAGS) -o $@ $<
+	$(CC) -o $@ $< $(LDFLAGS)
 
 .PHONY:
 libweggli:

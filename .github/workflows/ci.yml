@@ -31,3 +31,9 @@ jobs:
 
     - name: Build
       run: cargo build
+
+    - name: Demo
+      run: |
+        cd demo
+        make
+        ./demo
