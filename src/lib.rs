@@ -52,16 +52,24 @@ pub unsafe extern "C" fn weggli_destroy_query(qt: *mut QueryTree) {
 /// * `qt` must have been created by `weggli_new_query`. Passing in any other
 ///    source of query trees will produce a double-free.
 ///
-/// * `source` must be a valid, NULL-terminated string.
+/// * `source` must point to a valid region of memory containing a string
+///   of at least `length` bytes, **not** including any null terminator.
 #[no_mangle]
 pub unsafe extern "C" fn weggli_matches(
     qt: *mut QueryTree,
     source: *const c_char,
+    length: usize,
     cpp: bool,
 ) -> *mut QueryResults {
     let qt = &*qt;
 
-    let source = match CStr::from_ptr(source).to_str() {
+    // NOTE(ww): We transmute from `*const c_char` (which is either `i8` or `u8`,
+    // depending on the host) to `*const u8` here, since `str::from_utf8` only
+    // knows how to convert from `&[u8]` and not `&[i8]`.
+    let source = match std::str::from_utf8(std::slice::from_raw_parts(
+        std::mem::transmute(source),
+        length,
+    )) {
         Ok(q) => q,
         Err(_) => return std::ptr::null_mut(),
     };
