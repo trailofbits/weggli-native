@@ -1,7 +1,7 @@
-LDFLAGS := -L../target/release -lweggli_native
+LDFLAGS := -L../target/release -lweggli_native -Wl,-R../target/release
 
 demo: demo.c weggli.h libweggli
-	$(CC) $(LDFLAGS) -o $@ $<
+	$(CC) -o $@ $< $(LDFLAGS)
 
 .PHONY:
 libweggli:
