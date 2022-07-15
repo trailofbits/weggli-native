@@ -63,9 +63,13 @@ void weggli_destroy_query(struct QueryTree *qt);
  * * `qt` must have been created by `weggli_new_query`. Passing in any other
  *    source of query trees will produce a double-free.
  *
- * * `source` must be a valid, NULL-terminated string.
+ * * `source` must point to a valid region of memory containing a string
+ *   of at least `length` bytes, **not** including any null terminator.
  */
-struct QueryResults *weggli_matches(struct QueryTree *qt, const char *source, bool cpp);
+struct QueryResults *weggli_matches(struct QueryTree *qt,
+                                    const char *source,
+                                    uintptr_t length,
+                                    bool cpp);
 
 /**
  * Destroy the matches produced by [`weggli_matches`](weggli_matches).
@@ -115,8 +119,7 @@ void weggli_iter_matches(const struct QueryResults *matches, ResultCallback call
  *
  * # Safety
  *
- * * `matches` must have been created by `weggli_matches`, and must not have
- *   been previously freed by a call to `weggli_destroy_matches`.
+ * * `result` must have been created by `weggli_iter_matches`.
  */
 void weggli_iter_match_captures(const struct QueryResult *result,
                                 CapturesCallback callback,
@@ -142,8 +145,9 @@ void weggli_iter_match_captures(const struct QueryResult *result,
  *
  * # Safety
  *
- * * `matches` must have been created by `weggli_matches`, and must not have
- *   been previously freed by a call to `weggli_destroy_matches`.
+ * * `result` must have been created by `weggli_iter_matches`.
+ *
+ * * Callbacks must not hold onto `name` for longer than their own lifetime.
  */
 bool weggli_iter_match_variables(const struct QueryResult *result,
                                  VariablesCallback callback,
