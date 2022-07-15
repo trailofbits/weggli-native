@@ -39,7 +39,7 @@ int main(int argc, char const *argv[]) {
     errx(0, "weggli_new_query failed");
   }
 
-  QueryResults *matches = weggli_matches(qt, DEMO_SOURCE, false);
+  QueryResults *matches = weggli_matches(qt, DEMO_SOURCE, sizeof(DEMO_SOURCE) - 1, false);
 
   if (matches == NULL) {
     errx(0, "weggli_matches failed");
