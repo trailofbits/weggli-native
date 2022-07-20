@@ -14,10 +14,10 @@ function(find_native_staticlibs_dependencies RUST_LINK_LIBRARIES_CACHED)
     COMMAND ${CARGO} ${RUSTC_NAME} -- --print=native-static-libs
     OUTPUT_VARIABLE LINK_LIBRARIES_OUT
     ERROR_VARIABLE LINK_LIBRARIES_ERR
-    RESULT_VARIABLE CORGO_RET
+    RESULT_VARIABLE CARGO_RET
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
-  if (NOT "${CORGO_RET}" STREQUAL "0")
+  if (NOT "${CARGO_RET}" STREQUAL "0")
     message(FATAL_ERROR "cargo build failed: ${LINK_LIBRARIES_ERR}")
   endif()
   
