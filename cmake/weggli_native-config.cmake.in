@@ -7,6 +7,7 @@ if(NOT TARGET weggli_native::static)
         IMPORTED_LOCATION "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/libweggli_native@CMAKE_STATIC_LIBRARY_SUFFIX@"
         PUBLIC_HEADER "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/weggli.h")
     target_include_directories(weggli_native::static INTERFACE "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@")
+    target_link_libraries(weggli_native::static INTERFACE "@RUST_LINK_LIBRARIES@")
 endif()
 
 if(NOT TARGET weggli_native::shared)
