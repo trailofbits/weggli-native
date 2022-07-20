@@ -6,6 +6,8 @@ if(NOT((CMAKE_BUILD_TYPE STREQUAL "Release") OR(CMAKE_BUILD_TYPE STREQUAL "Debug
     message(FATAL_ERROR "Only Debug and Release builds are supported")
 endif()
 
+include(cmake/utils.cmake)
+
 find_program(CARGO "cargo" REQUIRED)
 find_program(CBINDGEN "cbindgen" REQUIRED)
 
@@ -36,6 +38,8 @@ add_custom_target(build-all ALL
         "${CMAKE_BINARY_DIR}/${TARGET_DIR}/libweggli_native${CMAKE_STATIC_LIBRARY_SUFFIX}"
         "${CMAKE_BINARY_DIR}/${TARGET_DIR}/libweggli_native${CMAKE_SHARED_LIBRARY_SUFFIX}"
         "${CMAKE_BINARY_DIR}/weggli.h")
+
+find_native_staticlibs_dependencies(RUST_LINK_LIBRARIES)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
