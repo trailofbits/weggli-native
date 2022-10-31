@@ -29,8 +29,10 @@ pub unsafe extern "C" fn weggli_new_query(q: *const c_char, cpp: bool) -> *mut Q
     let tree = weggli::parse(q, cpp);
     let mut c = tree.walk();
     let qt = weggli::builder::build_query_tree(q, &mut c, cpp, None);
-
-    Box::into_raw(Box::new(QueryTree(qt)))
+    match qt {
+        Ok(qt) => Box::into_raw(Box::new(QueryTree(qt))),
+        Err(_) => return std::ptr::null_mut(),
+    }
 }
 
 /// Destroy a Weggli query produced with [`weggli_new_query`](weggli_new_query).
