@@ -44,7 +44,7 @@ pub unsafe extern "C" fn weggli_new_query(q: *const c_char, cpp: bool) -> *mut Q
 ///    query trees will produce a double-free.
 #[no_mangle]
 pub unsafe extern "C" fn weggli_destroy_query(qt: *mut QueryTree) {
-    Box::from_raw(qt);
+    drop(Box::from_raw(qt))
 }
 
 /// Run a Weggli query against some source code.
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn weggli_matches(
 ///   previously passed into this function.
 #[no_mangle]
 pub unsafe extern "C" fn weggli_destroy_matches(res: *mut QueryResults) {
-    Box::from_raw(res);
+    drop(Box::from_raw(res))
 }
 
 type ResultCallback = unsafe extern "C" fn(*const QueryResult, *mut c_void) -> bool;
