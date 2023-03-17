@@ -1,3 +1,7 @@
+#![forbid(clippy::expect_used)]
+#![forbid(clippy::unwrap_used)]
+#![forbid(clippy::panic)]
+
 use std::ffi::{CStr, CString};
 
 use libc::{c_char, c_void, size_t};
