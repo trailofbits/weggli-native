@@ -1,4 +1,4 @@
-name: CI
+name: Tests
 
 on:
   push:
@@ -7,22 +7,7 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Format
-        run: cargo fmt && git diff --exit-code
-
-      - name: Lint
-        run: |
-          rustup update
-          rustup component add clippy
-          cargo clippy -- \
-            -D warnings -D clippy::expect_used -D clippy::unwrap_used -D clippy::panic
-
   demo:
-    needs: lint
     strategy:
       fail-fast: false
       matrix:
@@ -44,7 +29,6 @@ jobs:
         ./demo
 
   cmake:
-    needs: lint
     strategy:
       fail-fast: false
       matrix:
