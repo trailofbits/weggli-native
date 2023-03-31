@@ -8,7 +8,7 @@ name = "weggli_native"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-libc = "0.2"
+libc = "0.2.127"
 weggli = {git = "https://github.com/googleprojectzero/weggli.git", rev = "07cbd6223b07d96ada3a22d3ef850a628412c508" }
 
 [dev-dependencies]
