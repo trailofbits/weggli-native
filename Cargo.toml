@@ -12,4 +12,4 @@ libc = "0.2"
 weggli = {git = "https://github.com/googleprojectzero/weggli.git", rev = "07cbd6223b07d96ada3a22d3ef850a628412c508" }
 
 [dev-dependencies]
-cbindgen = "0.24"
+cbindgen = "0.25"
