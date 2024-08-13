@@ -19,7 +19,7 @@ $ # add --release for a release build
 $ cargo build
 ```
 
-You can also use [`cbindgen`](https://github.com/eqrion/cbindgen) to generate
+You can also use [`cbindgen`](https://github.com/mozilla/cbindgen) to generate
 weggli-native's header file:
 
 ```console
